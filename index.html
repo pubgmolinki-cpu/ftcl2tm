@@ -165,19 +165,46 @@
 
         <div class="space-y-6">
             <div class="bg-white p-4 rounded shadow-sm border border-slate-200 space-y-4">
-                <h4 class="font-bold text-xs uppercase text-slate-400 tracking-wider">Сводка FTCL 2 MARKET</h4>
-                <div class="space-y-2">
-                    <div class="flex justify-between text-xs border-b border-slate-50 pb-2">
-                        <span class="text-slate-500">Зарегистрировано клубов:</span>
+                <div class="flex justify-between items-center border-b border-slate-100 pb-2.5">
+                    <h4 class="font-bold text-xs uppercase text-slate-400 tracking-wider">Рынок переходов</h4>
+                    <span id="market-status-badge" class="text-[10px] font-black px-2 py-0.5 rounded tracking-wide uppercase shadow-2xs transition">
+                        Загрузка...
+                    </span>
+                </div>
+                
+                <div>
+                    <span class="text-[11px] text-slate-400 block font-medium mb-1.5" id="market-timer-title">До закрытия окна осталось:</span>
+                    <div id="market-countdown-container" class="grid grid-cols-4 gap-1 text-center font-mono">
+                        <div class="bg-slate-900 text-white rounded p-1.5">
+                            <span id="timer-days" class="text-sm font-black block leading-none">00</span>
+                            <span class="text-[8px] text-slate-400 uppercase">дн</span>
+                        </div>
+                        <div class="bg-slate-900 text-white rounded p-1.5">
+                            <span id="timer-hours" class="text-sm font-black block leading-none">00</span>
+                            <span class="text-[8px] text-slate-400 uppercase">ч</span>
+                        </div>
+                        <div class="bg-slate-900 text-white rounded p-1.5">
+                            <span id="timer-minutes" class="text-sm font-black block leading-none">00</span>
+                            <span class="text-[8px] text-slate-400 uppercase">мин</span>
+                        </div>
+                        <div class="bg-slate-900 text-white rounded p-1.5">
+                            <span id="timer-seconds" class="text-[#a78bfa] text-sm font-black block leading-none">00</span>
+                            <span class="text-[8px] text-slate-400 uppercase">сек</span>
+                        </div>
+                    </div>
+                    <div id="market-closed-message" class="hidden text-xs text-slate-500 font-medium bg-slate-50 p-3 rounded border border-slate-100 text-center">
+                        🔒 Регистрация новых контрактов приостановлена до старта следующего окна.
+                    </div>
+                </div>
+
+                <div class="pt-2 border-t border-slate-50 space-y-1.5 text-xs">
+                    <div class="flex justify-between">
+                        <span class="text-slate-500">Клубы лиги:</span>
                         <span class="font-bold text-slate-900" id="stat-clubs">1</span>
                     </div>
-                    <div class="flex justify-between text-xs border-b border-slate-50 pb-2">
-                        <span class="text-slate-500">Всего игроков в лиге:</span>
+                    <div class="flex justify-between">
+                        <span class="text-slate-500">Всего игроков:</span>
                         <span class="font-bold text-slate-900" id="stat-players">0</span>
-                    </div>
-                    <div class="flex justify-between text-xs">
-                        <span class="text-slate-500">Рекордный рейтинг:</span>
-                        <span class="font-bold text-violet-600" id="stat-max-rating">0</span>
                     </div>
                 </div>
             </div>
@@ -216,30 +243,32 @@
 
     <script>
         // ========================================================
-        // СТРУКТУРИРОВАННАЯ БАЗА КЛУБОВ
+        // НАСТРОЙКА ДЕДЛАЙНА ТРАНСФЕРНОГО ОКНА
+        // Измените эту дату, чтобы выставить дедлайн для лиги
+        // Формат: 'ГГГГ-ММ-ДДTЧЧ:ММ:СС'
         // ========================================================
+        const TRANSFER_DEADLINE = new Date('2026-06-25T23:59:59').getTime();
+
+        // БАЗА КЛУБОВ И ИГРОКОВ
         const FTCL_CLUBS = [
             { id: "zaga_rfc", name: "РФК Зага", owner: "@fanziks", sideColor: "bg-violet-600", coach: { name: "Франческо Зага", license: "A" } }
         ];
 
-        // ИГРОКИ РФК ЗАГА
         const FTCL_PLAYERS = [
             { id: 1, nick: "Зага", clubId: "zaga_rfc", clubName: "РФК Зага", position: "Нападающий", price: "5.00 млн ₽", rawPrice: 5000000, rating: 50 },
             { id: 2, nick: "Зенитчик", clubId: "zaga_rfc", clubName: "РФК Зага", position: "Защитник", price: "2.10 млн ₽", rawPrice: 2100000, rating: 55 },
             { id: 3, nick: "Тест Сайта", clubId: "zaga_rfc", clubName: "РФК Зага", position: "Вратарь", price: "4.00 млн ₽", rawPrice: 4000000, rating: 50 },
             { id: 4, nick: "Игрок Пять", clubId: "zaga_rfc", clubName: "РФК Зага", position: "Полузащитник", price: "1.50 млн ₽", rawPrice: 1500000, rating: 48 },
             { id: 5, nick: "Игрок Шесть", clubId: "zaga_rfc", clubName: "РФК Зага", position: "Защитник", price: "3.20 млн ₽", rawPrice: 3200000, rating: 60 },
-            { id: 6, nick: "Игрок Семь", clubId: "zaga_rfc", clubName: "РФК Зага", position: "Нападающий", price: "6.00 млн ₽", rawPrice: 6000000, rating: 65 }
+            { id: 6, nick: "Игрок Семь", clubId: "zaga_rfc", clubName: "РФК Заga", position: "Нападающий", price: "6.00 млн ₽", rawPrice: 6000000, rating: 65 }
         ];
 
-        // ЛЕНТА УВЕДОМЛЕНИЙ С УМНЫМ АВТОИСЧЕЗНОВЕНИЕМ (ЧЕРЕЗ 24 ЧАСА)
-        // Чтобы изменить время создания, вставьте дату в формате: 'ГГГГ-ММ-ДДTЧЧ:ММ:СС'
         const NEWS_DATA = [
             { 
                 title: "Обновление системы поиска", 
                 text: "Раздел тренеров успешно отделен от клубов. Теперь в результатах поиска выводится полноценная персональная карта тренера с указанием его текущей лицензии и команды.", 
                 dateText: "Сегодня, 19:15",
-                createdAt: new Date('2026-06-16T19:15:00').getTime() // Дата создания
+                createdAt: new Date('2026-06-16T19:15:00').getTime()
             },
             { 
                 title: "Подготовка к заполнению", 
@@ -253,16 +282,58 @@
         let currentLetterFilter = 'ALL';
 
         // ========================================================
-        // ФУНКЦИЯ ФИЛЬТРАЦИИ И ОТРЕНДЕРИВАНИЯ СВЕЖИХ НОВОСТЕЙ
+        // ДИНАМИЧЕСКИЙ ТАЙМЕР ТРАНСФЕРНОГО ОКНА (ОБНОВЛЕНИЕ СЕКУНД)
         // ========================================================
+        function initTransferTimer() {
+            const statusBadge = document.getElementById('market-status-badge');
+            const countdownContainer = document.getElementById('market-countdown-container');
+            const closedMessage = document.getElementById('market-closed-message');
+            const timerTitle = document.getElementById('market-timer-title');
+
+            function updateTimer() {
+                const now = new Date().getTime();
+                const distance = TRANSFER_DEADLINE - now;
+
+                if (distance < 0) {
+                    // ЕСЛИ ВРЕМЯ ВЫШЛО
+                    statusBadge.innerText = "● Окно Закрыто";
+                    statusBadge.className = "text-[10px] font-black px-2 py-0.5 rounded tracking-wide uppercase bg-rose-100 text-rose-700 shadow-2xs";
+                    countdownContainer.classList.add('hidden');
+                    timerTitle.classList.add('hidden');
+                    closedMessage.classList.remove('hidden');
+                    return;
+                }
+
+                // ЕСЛИ ОКНО ОТКРЫТО — СЧИТАЕМ ЦИФРЫ
+                statusBadge.innerText = "● Окно Открыто";
+                statusBadge.className = "text-[10px] font-black px-2 py-0.5 rounded tracking-wide uppercase bg-emerald-100 text-emerald-700 shadow-2xs animate-pulse";
+                countdownContainer.classList.remove('hidden');
+                closedMessage.classList.add('hidden');
+                timerTitle.classList.remove('hidden');
+
+                const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+                document.getElementById('timer-days').innerText = String(days).padStart(2, '0');
+                document.getElementById('timer-hours').innerText = String(hours).padStart(2, '0');
+                document.getElementById('timer-minutes').innerText = String(minutes).padStart(2, '0');
+                document.getElementById('timer-seconds').innerText = String(seconds).padStart(2, '0');
+            }
+
+            // Запускаем каждую секунду
+            updateTimer();
+            setInterval(updateTimer, 1000);
+        }
+
         function renderNews() {
             const container = document.getElementById('news-container');
             if (!container) return;
             
             const currentTime = new Date().getTime();
-            const oneDayInMs = 24 * 60 * 60 * 1000; // 24 часа в миллисекундах
+            const oneDayInMs = 24 * 60 * 60 * 1000;
 
-            // Оставляем только те новости, с момента создания которых прошло МЕНЬШЕ 24 часов
             const activeNews = NEWS_DATA.filter(news => (currentTime - news.createdAt) < oneDayInMs);
 
             if (activeNews.length === 0) {
@@ -409,9 +480,6 @@
             switchTab('news');
         }
 
-        // ========================================================
-        // СОРТИРОВКА И ПЕРЕКЛЮЧЕНИЕ ВКЛАДОК
-        // ========================================================
         function togglePriceSort() {
             currentPriceSortOrder = (currentPriceSortOrder === 'desc') ? 'asc' : 'desc';
             document.getElementById('sortDirectionArrow').innerText = (currentPriceSortOrder === 'desc') ? "Убывание ⬇️" : "Возрастание ⬆️";
@@ -445,9 +513,6 @@
             return 'bg-slate-200 text-slate-800 font-medium';                     
         }
 
-        // ========================================================
-        // ФИЛЬТРАЦИЯ И ОТРИСОВКА СПИСКА КЛУБОВ
-        // ========================================================
         function filterClubsByLetter(range) {
             currentLetterFilter = range;
             
@@ -511,9 +576,6 @@
             }).join('');
         }
 
-        // ========================================================
-        // ДИНАМИЧЕСКИЕ СТРАНИЦЫ И СТАТИСТИКА
-        // ========================================================
         function renderValuesPage() {
             const tbody = document.getElementById('values-table-body');
             const playersCopy = [...FTCL_PLAYERS];
@@ -614,28 +676,19 @@
             document.getElementById('ftclModal').classList.remove('hidden');
         }
 
-        // Закрытие модального окна
         function closeModal() {
             document.getElementById('ftclModal').classList.add('hidden');
         }
 
-        // Обновление цифр в боковой панели
         function updateSidebarStats() {
             document.getElementById('stat-clubs').innerText = FTCL_CLUBS.length;
             document.getElementById('stat-players').innerText = FTCL_PLAYERS.length;
             document.getElementById('clubs-count-badge').innerText = `Всего: ${FTCL_CLUBS.length}`;
-            
-            if (FTCL_PLAYERS.length > 0) {
-                const maxRating = Math.max(...FTCL_PLAYERS.map(p => p.rating));
-                const topPlayer = FTCL_PLAYERS.find(p => p.rating === maxRating);
-                document.getElementById('stat-max-rating').innerText = topPlayer ? `${maxRating} (${topPlayer.nick})` : "0";
-            } else {
-                document.getElementById('stat-max-rating').innerText = "0";
-            }
         }
 
         // Инициализация при старте
         window.onload = function() {
+            initTransferTimer();
             renderNews();
             renderClubsList();
             renderValuesPage();
