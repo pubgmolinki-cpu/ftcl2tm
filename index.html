@@ -3,381 +3,640 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Панель управления FTCL 2 | TM Template</title>
+    <title>FTCL 2 MARKET | Официальная платформа лиги</title>
+    <!-- Подключение Tailwind CSS v4 -->
     <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
+    <!-- Подключение шрифта Inter через Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #f2f5f7;
-        }
-        .tab-content {
-            display: none;
-        }
-        .tab-content.active {
-            display: block;
-        }
-    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght=300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 </head>
-<body class="text-slate-800 antialiased min-h-screen flex flex-col">
+<body class="bg-[#f4f3f8] text-slate-800 font-sans antialiased min-h-screen flex flex-col">
 
-    <div class="bg-[#101f33] text-xs text-slate-400 py-1.5 border-b border-slate-800">
+    <!-- ВЕРХНЯЯ СЛУЖЕБНАЯ ПАНЕЛЬ -->
+    <div class="bg-[#120e25] text-xs text-slate-400 py-2 border-b border-[#2d2254]">
         <div class="max-w-7xl mx-auto px-4 flex justify-between items-center">
             <div class="flex items-center space-x-4">
-                <span class="font-medium text-[#d4f01e]">TG-League Markt</span>
-                <span class="opacity-60">Платформа вашей кастомной лиги</span>
+                <a href="https://t.me/ftcl2" target="_blank" class="font-bold text-[#a78bfa] hover:text-[#c084fc] tracking-wider transition flex items-center gap-1">
+                    @FTCL2
+                    <span class="text-[10px] opacity-60 font-normal">(открыть TG)</span>
+                </a>
+                <span class="opacity-60 hidden sm:inline">Система управления трансферами и рейтингами</span>
             </div>
-            <div class="flex items-center space-x-3">
-                <span class="flex items-center gap-1 text-white">
-                    <img src="https://unpkg.com/lucide-static@latest/icons/send.svg" class="w-3 h-3 invert" alt="Telegram">
-                    Связано с Telegram
-                </span>
+            <div class="text-slate-300 font-medium">
+                Сезон 2026 • Лига FTCL 2
             </div>
         </div>
     </div>
 
-    <header class="bg-[#1a3151] text-white shadow-md">
+    <!-- ГЛАВНАЯ ШАПКА -->
+    <header class="bg-gradient-to-r from-[#1e1642] to-[#2b1f5c] text-white shadow-md border-b-4 border-[#7c3aed]">
         <div class="max-w-7xl mx-auto px-4 py-4 flex flex-col md:flex-row items-center justify-between gap-4">
-            <div class="flex items-center space-x-2 cursor-pointer" onclick="switchTab('news')">
-                <div class="bg-[#2a4970] text-white font-black text-2xl px-3 py-1.5 rounded tracking-tighter border-b-4 border-[#101f33]">
-                    telegram <span class="text-[#d4f01e]">markt</span>
+            <!-- Логотип платформы -->
+            <div class="flex items-center space-x-2 cursor-pointer" onclick="clearSearchAndGoHome()">
+                <div class="bg-[#120e25]/60 text-white font-black text-2xl px-4 py-1.5 rounded tracking-tight italic uppercase border-b-2 border-slate-900 shadow-inner">
+                    ftcl 2 <span class="text-[#a78bfa]">market</span>
                 </div>
             </div>
 
+            <!-- СТРОКА ПОИСКА -->
             <div class="w-full md:w-96 relative">
-                <input type="text" id="playerSearch" placeholder="Поиск кастомных игроков по нику..." class="w-full bg-[#2a4970] text-sm text-white placeholder-slate-400 pl-4 pr-10 py-2 rounded focus:outline-none focus:ring-2 focus:ring-[#d4f01e] border-none">
-                <button class="absolute right-2 top-2">
-                    <img src="https://unpkg.com/lucide-static@latest/icons/search.svg" class="w-5 h-5 invert opacity-80" alt="Search">
+                <input type="text" id="playerSearch" oninput="handleSearch(this.value)" placeholder="Поиск игрока или тренера..." class="w-full bg-[#120e25]/50 text-sm text-white placeholder-slate-400 pl-4 pr-10 py-2 rounded border border-[#4c3a93] focus:outline-none focus:border-[#a78bfa] focus:ring-1 focus:ring-[#a78bfa]">
+                <button class="absolute right-3 top-2.5" id="searchIconBtn">
+                    <img src="https://unpkg.com/lucide-static@latest/icons/search.svg" class="w-4 h-4 invert opacity-60" alt="Search">
                 </button>
             </div>
         </div>
 
-        <nav class="bg-[#101f33] text-sm font-semibold border-t border-slate-700">
+        <!-- НАВИГАЦИОННОЕ МЕНЮ -->
+        <nav class="bg-[#120e25] text-xs font-bold uppercase tracking-wider">
             <div class="max-w-7xl mx-auto px-4 flex flex-wrap items-center">
-                <button onclick="switchTab('news')" id="nav-news" class="nav-btn px-4 py-3 text-[#d4f01e] border-b-2 border-[#d4f01e] bg-[#1a3151] cursor-pointer">Новости</button>
-                <button onclick="switchTab('clubs')" id="nav-clubs" class="nav-btn px-4 py-3 text-slate-300 hover:text-white hover:bg-[#1a3151] transition cursor-pointer">Клубы Лиги</button>
-                <button onclick="switchTab('values')" id="nav-values" class="nav-btn px-4 py-3 text-slate-300 hover:text-white hover:bg-[#1a3151] transition cursor-pointer">Рыночные стоимости</button>
-                <button onclick="switchTab('transfers')" id="nav-transfers" class="nav-btn px-4 py-3 text-slate-300 hover:text-white hover:bg-[#1a3151] transition cursor-pointer">Трансферное окно</button>
+                <button onclick="switchTab('news')" id="nav-news" class="nav-btn px-5 py-3.5 text-[#a78bfa] border-b-2 border-[#a78bfa] bg-[#1e1642] cursor-pointer transition">Лента новостей</button>
+                <button onclick="switchTab('clubs')" id="nav-clubs" class="nav-btn px-5 py-3.5 text-slate-300 hover:text-white hover:bg-[#1e1642] transition cursor-pointer">Клубы Лиги</button>
+                <button onclick="switchTab('values')" id="nav-values" class="nav-btn px-5 py-3.5 text-slate-300 hover:text-white hover:bg-[#1e1642] transition cursor-pointer">Рыночные стоимости</button>
+                <button onclick="switchTab('transfers')" id="nav-transfers" class="nav-btn px-5 py-3.5 text-slate-300 hover:text-white hover:bg-[#1e1642] transition cursor-pointer">Трансферы</button>
+                <button id="nav-search" class="nav-btn hidden px-5 py-3.5 text-slate-300 pointer-events-none">Результаты поиска</button>
             </div>
         </nav>
     </header>
 
+    <!-- ОСНОВНОЙ КОНТЕНТ -->
     <main class="max-w-7xl mx-auto px-4 py-6 grid grid-cols-1 lg:grid-cols-3 gap-6 flex-grow w-full">
         
+        <!-- ЛЕВАЯ И ЦЕНТРАЛЬНАЯ ЧАСТЬ -->
         <div class="lg:col-span-2 space-y-6">
             
+            <!-- ВКЛАДКА 1: НОВОСТИ -->
             <div id="tab-news" class="tab-content active space-y-6">
-                <div class="bg-white rounded-lg shadow-sm overflow-hidden border border-slate-200">
-                    <div class="relative bg-slate-900 h-72 w-full flex items-end">
-                        <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent z-10"></div>
-                        <div class="absolute inset-0 bg-[#1a3151] opacity-40 flex items-center justify-center">
-                            <img src="https://unpkg.com/lucide-static@latest/icons/sparkles.svg" class="w-24 h-24 text-white opacity-20" alt="Welcome">
-                        </div>
+                <div class="bg-white rounded shadow-sm overflow-hidden border border-slate-200">
+                    <div class="relative bg-slate-900 h-44 w-full flex items-end">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black via-slate-950/40 to-transparent z-10"></div>
+                        <div class="absolute inset-0 bg-gradient-to-r from-[#1e1642] to-[#2b1f5c] opacity-95"></div>
                         <div class="relative z-20 p-6 text-white w-full">
-                            <span class="bg-[#d4f01e] text-slate-900 text-xs font-bold uppercase px-2 py-0.5 rounded">Запуск лиги</span>
-                            <h1 class="text-xl md:text-2xl font-bold mt-2 leading-tight">
-                                Добро пожаловать в вашу кастомную Telegram-лигу! Этот шаблон полностью готов к кастомизации.
+                            <span class="bg-[#7c3aed] text-white text-[10px] font-bold uppercase px-2 py-0.5 rounded tracking-wide">Система</span>
+                            <h1 class="text-xl font-bold mt-2 leading-tight">
+                                Добро пожаловать на FTCL 2 MARKET
                             </h1>
-                            <p class="text-slate-300 text-xs mt-2">
-                                Нажимайте на вкладки меню выше, чтобы посмотреть, как переключаются разделы «Клубы», «Стоимости» и «Трансферы». Ниже приведены демо-данные, которые мы заменим на ваших игроков.
+                            <p class="text-slate-300 text-xs mt-1.5">
+                                База данных полностью очищена и подготовлена к заполнению. Цветовая гамма переведена на фирменный глубокий фиолетовый стиль футбольной аналитики.
                             </p>
                         </div>
                     </div>
                 </div>
 
-                <div class="bg-white rounded-lg shadow-sm border border-slate-200 p-4">
-                    <h3 class="font-bold text-sm text-[#1a3151] uppercase border-b border-slate-100 pb-2 mb-3">Лента событий лиги</h3>
-                    <div class="space-y-4" id="news-container">
-                        </div>
-                </div>
-            </div>
-
-            <div id="tab-clubs" class="tab-content space-y-4">
-                <div class="bg-white rounded-lg shadow-sm border border-slate-200 overflow-hidden">
-                    <div class="bg-[#1a3151] text-white px-4 py-3">
-                        <h3 class="font-bold text-sm uppercase tracking-wide">Участники и команды Telegram Лиги</h3>
+                <!-- Динамическая лента новостей -->
+                <div class="bg-white rounded shadow-sm border border-slate-200 p-4">
+                    <h3 class="font-bold text-xs text-[#1e1642] uppercase border-b border-slate-100 pb-2 mb-3 tracking-wide">Последние обновления</h3>
+                    <div class="space-y-3" id="news-container">
+                        <!-- Новости генерируются из JavaScript -->
                     </div>
-                    <div class="p-4 grid grid-cols-1 md:grid-cols-2 gap-4" id="clubs-container">
-                        </div>
                 </div>
             </div>
 
-            <div id="tab-values" class="tab-content">
-                <div class="bg-white rounded-lg shadow-sm border border-slate-200 overflow-hidden">
-                    <div class="bg-[#1a3151] text-white px-4 py-3 flex justify-between items-center">
-                        <h3 class="font-bold text-sm uppercase tracking-wide">Рейтинг ценности игроков (Кликните на игрока)</h3>
+            <!-- ВКЛАДКА 2: КЛУБЫ ЛИГИ -->
+            <div id="tab-clubs" class="tab-content hidden space-y-4">
+                <div class="bg-white rounded shadow-sm border border-slate-200 p-4">
+                    
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between border-b border-slate-100 pb-3 mb-4 gap-2">
+                        <div>
+                            <h3 class="font-bold text-sm text-[#1e1642] uppercase">Клубы участники лиги FTCL 2</h3>
+                            <p class="text-slate-400 text-xs mt-0.5">Выберите команду для просмотра тренерского штаба и полной заявки состава</p>
+                        </div>
+                        <div class="text-xs bg-slate-100 text-slate-600 font-bold px-2.5 py-1 rounded" id="clubs-count-badge">
+                            Всего: 1
+                        </div>
+                    </div>
+
+                    <!-- ПАНЕЛЬ БЫСТРОГО АЛФАВИТНОГО ПОИСКА -->
+                    <div class="bg-slate-50 p-2 rounded border border-slate-200 flex flex-wrap gap-1 items-center mb-4">
+                        <span class="text-[11px] font-bold uppercase text-slate-400 px-2">Фильтр:</span>
+                        <button onclick="filterClubsByLetter('ALL')" class="club-filter-btn bg-[#7c3aed] text-white text-xs px-2.5 py-1 rounded font-medium cursor-pointer transition">Все</button>
+                        <button onclick="filterClubsByLetter('А-Д')" class="club-filter-btn bg-white text-slate-600 hover:bg-slate-200 text-xs px-2.5 py-1 rounded font-medium cursor-pointer transition border border-slate-200">А-Д</button>
+                        <button onclick="filterClubsByLetter('Е-К')" class="club-filter-btn bg-white text-slate-600 hover:bg-slate-200 text-xs px-2.5 py-1 rounded font-medium cursor-pointer transition border border-slate-200">Е-К</button>
+                        <button onclick="filterClubsByLetter('Л-Р')" class="club-filter-btn bg-white text-slate-600 hover:bg-slate-200 text-xs px-2.5 py-1 rounded font-medium cursor-pointer transition border border-slate-200">Л-Р</button>
+                        <button onclick="filterClubsByLetter('С-Я')" class="club-filter-btn bg-white text-slate-600 hover:bg-slate-200 text-xs px-2.5 py-1 rounded font-medium cursor-pointer transition border border-slate-200">С-Я</button>
+                        <button onclick="filterClubsByLetter('ENG')" class="club-filter-btn bg-white text-slate-600 hover:bg-slate-200 text-xs px-2.5 py-1 rounded font-medium cursor-pointer transition border border-slate-200">A-Z</button>
+                    </div>
+
+                    <!-- КОМПАКТНЫЙ СПИСОК КЛУБОВ -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-2" id="clubs-list-container">
+                        <!-- Динамический список -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- ВКЛАДКА 3: РЫНОЧНЫЕ СТОИМОСТИ -->
+            <div id="tab-values" class="tab-content hidden">
+                <div class="bg-white rounded shadow-sm border border-slate-200 overflow-hidden">
+                    <div class="bg-[#1e1642] text-white px-4 py-3 flex justify-between items-center">
+                        <h3 class="font-bold text-xs uppercase tracking-wide">Таблица ценности игроков</h3>
+                        <button onclick="togglePriceSort()" class="bg-[#120e25] hover:bg-slate-800 text-[#a78bfa] text-xs font-bold py-1.5 px-3 rounded flex items-center gap-1.5 transition cursor-pointer select-none">
+                            <span>Сортировка цен:</span>
+                            <span id="sortDirectionArrow">Убывание ⬇️</span>
+                        </button>
                     </div>
                     <div class="overflow-x-auto">
-                        <table class="w-full text-left border-collapse text-sm">
+                        <table class="w-full text-left border-collapse text-xs">
                             <thead>
-                                <tr class="bg-slate-100 border-b border-slate-200 text-slate-500 font-semibold text-xs uppercase">
+                                <tr class="bg-slate-100 border-b border-slate-200 text-slate-500 font-bold uppercase">
                                     <th class="py-2.5 px-4 text-center w-12">#</th>
-                                    <th class="py-2.5 px-2">Никнейм игрока</th>
-                                    <th class="py-2.5 px-2">Текущий Клуб</th>
+                                    <th class="py-2.5 px-2">Никнейм</th>
+                                    <th class="py-2.5 px-2">Клуб</th>
                                     <th class="py-2.5 px-2 text-center">Позиция</th>
+                                    <th class="py-2.5 px-2 text-center w-20">Рейтинг</th>
                                     <th class="py-2.5 px-4 text-right">Рын. Стоимость</th>
                                 </tr>
                             </thead>
-                            <tbody id="values-table-body" class="divide-y divide-slate-100 font-medium">
-                                </tbody>
+                            <tbody id="values-table-body" class="divide-y divide-slate-100 font-medium text-slate-700">
+                                <!-- Строки игроков -->
+                            </tbody>
                         </table>
                     </div>
                 </div>
             </div>
 
-            <div id="tab-transfers" class="tab-content">
-                <div class="bg-white rounded-lg shadow-sm border border-slate-200 overflow-hidden">
-                    <div class="bg-[#1a3151] text-white px-4 py-3">
-                        <h3 class="font-bold text-sm uppercase tracking-wide">Последние сделки и переходы в TG-Лиге</h3>
+            <!-- ВКЛАДКА 4: ТРАНСФЕРЫ -->
+            <div id="tab-transfers" class="tab-content hidden">
+                <div class="bg-white rounded shadow-sm border border-slate-200 overflow-hidden">
+                    <div class="bg-[#1e1642] text-white px-4 py-3">
+                        <h3 class="font-bold text-xs uppercase tracking-wide">Последние трансферные переходы</h3>
                     </div>
-                    <div class="divide-y divide-slate-100 text-sm" id="transfers-container">
-                        </div>
+                    <div class="p-8 text-center text-slate-400 text-xs">
+                        Официальное трансферное окно открыто. Сделок пока не зарегистрировано.
+                    </div>
+                </div>
+            </div>
+
+            <!-- ВСПЛЫВАЮЩАЯ ПОДСТРАНИЦА: РЕЗУЛЬТАТЫ ПОИСКА -->
+            <div id="tab-search" class="tab-content hidden space-y-4">
+                <div class="bg-white rounded shadow-sm border border-slate-200 p-4">
+                    <div class="flex justify-between items-center border-b border-slate-100 pb-3 mb-4">
+                        <h3 class="font-bold text-xs text-[#1e1642] uppercase">
+                            Найдено совпадений: <span id="search-matches-count" class="text-[#7c3aed] font-black">0</span>
+                        </h3>
+                        <button onclick="clearSearchAndGoHome()" class="text-xs text-rose-600 font-semibold hover:underline cursor-pointer">Сбросить поиск &times;</button>
+                    </div>
+                    <div class="space-y-2" id="search-results-container">
+                        <!-- Результаты поиска -->
+                    </div>
                 </div>
             </div>
 
         </div>
 
+        <!-- ПРАВАЯ СЕКЦИЯ -->
         <div class="space-y-6">
-            <div class="bg-white rounded-lg shadow-sm border border-slate-200 overflow-hidden">
-                <div class="bg-[#a2d300] text-slate-950 px-4 py-3 flex justify-between items-center">
-                    <h3 class="font-bold text-xs uppercase tracking-wider flex items-center gap-2">
-                        <img src="https://unpkg.com/lucide-static@latest/icons/message-square.svg" class="w-4 h-4" alt="Chat">
-                        Слухи из чата Telegram
-                    </h3>
-                    <span class="text-xs bg-slate-900 text-white font-bold px-1.5 py-0.5 rounded">Инсайд</span>
+            <!-- ИНФО-ПАНЕЛЬ ЛИГИ -->
+            <div class="bg-white p-4 rounded shadow-sm border border-slate-200 space-y-4">
+                <h4 class="font-bold text-xs uppercase text-slate-400 tracking-wider">Сводка FTCL 2 MARKET</h4>
+                <div class="space-y-2">
+                    <div class="flex justify-between text-xs border-b border-slate-50 pb-2">
+                        <span class="text-slate-500">Зарегистрировано клубов:</span>
+                        <span class="font-bold text-slate-900" id="stat-clubs">1</span>
+                    </div>
+                    <div class="flex justify-between text-xs border-b border-slate-50 pb-2">
+                        <span class="text-slate-500">Всего игроков в лиге:</span>
+                        <span class="font-bold text-slate-900" id="stat-players">0</span>
+                    </div>
+                    <div class="flex justify-between text-xs">
+                        <span class="text-slate-500">Рекордный рейтинг:</span>
+                        <span class="font-bold text-violet-600" id="stat-max-rating">0</span>
+                    </div>
                 </div>
-                <ul class="divide-y divide-slate-100 text-xs p-1">
-                    <li class="p-3 hover:bg-slate-50">
-                        <div class="font-bold text-slate-800">@User_Alpha ➔ FC Diamonds?</div>
-                        <div class="text-slate-500 mt-1">Владелец клуба Diamonds намекнул на покупку топ-форварда в вечернем войсе.</div>
-                    </li>
-                    <li class="p-3 hover:bg-slate-50">
-                        <div class="font-bold text-slate-800">@Striker99 выставили на трансфер</div>
-                        <div class="text-slate-500 mt-1">Причина: пропуск трех матчей лиги подряд без объяснения причин.</div>
-                    </li>
-                </ul>
             </div>
-
-            <div class="bg-white p-4 rounded-lg shadow-sm border border-slate-200 space-y-3">
-                <h4 class="font-bold text-xs uppercase text-slate-400 tracking-wider">Сводка Лиги</h4>
-                <div class="grid grid-cols-2 gap-2 text-center">
-                    <div class="bg-slate-50 p-3 rounded border border-slate-100">
-                        <span class="block text-xl font-bold text-[#1a3151]" id="stat-clubs-count">0</span>
-                        <span class="text-[11px] text-slate-500">Всего клубов</span>
-                    </div>
-                    <div class="bg-slate-50 p-3 rounded border border-slate-100">
-                        <span class="block text-xl font-bold text-[#1a3151]" id="stat-players-count">0</span>
-                        <span class="text-[11px] text-slate-500">Игроков в базе</span>
-                    </div>
+            
+            <!-- СПРАВКА ЛИЦЕНЗИЙ -->
+            <div class="bg-[#1e1642] text-slate-300 p-4 rounded shadow-sm space-y-3">
+                <h4 class="font-bold text-xs uppercase text-[#a78bfa] tracking-wider">
+                    Категории тренеров
+                </h4>
+                <div class="text-[11px] space-y-1.5 text-slate-400">
+                    <div><span class="font-bold text-white font-mono">Лицензия A</span> — Высший статус управления</div>
+                    <div><span class="font-bold text-white font-mono">Лицензия B</span> — Продвинутый уровень</div>
+                    <div><span class="font-bold text-white font-mono">Лицензия C</span> — Базовый уровень</div>
                 </div>
             </div>
         </div>
     </main>
 
-    <div id="playerModal" class="fixed inset-0 bg-slate-950/60 backdrop-blur-xs z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-white w-full max-w-md rounded-lg shadow-xl border border-slate-200 overflow-hidden transform transition-all">
-            <div class="bg-[#1a3151] p-4 text-white flex justify-between items-center">
-                <h3 class="font-bold text-base flex items-center gap-2">
-                    <img src="https://unpkg.com/lucide-static@latest/icons/user.svg" class="w-5 h-5 invert" alt="Profile">
-                    Личное дело игрока
-                </h3>
-                <button onclick="closeModal()" class="text-slate-300 hover:text-white cursor-pointer text-xl font-semibold">&times;</button>
+    <!-- УНИВЕРСАЛЬНОЕ МОДАЛЬНОЕ ОКНО -->
+    <div id="ftclModal" class="fixed inset-0 bg-slate-950/60 backdrop-blur-xs z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white w-full max-w-lg rounded shadow-lg border border-slate-200 overflow-hidden transform transition-all flex flex-col max-h-[90vh]">
+            <div id="modal-header-bg" class="bg-[#1e1642] p-4 text-white flex justify-between items-center shrink-0">
+                <div class="font-bold text-sm uppercase tracking-wide" id="modal-title-context"></div>
+                <button onclick="closeModal()" class="text-slate-400 hover:text-white cursor-pointer text-xl font-semibold leading-none">&times;</button>
             </div>
-            <div class="p-6 space-y-4" id="modal-content">
-                </div>
-            <div class="bg-slate-50 px-6 py-3 text-right border-t border-slate-100">
-                <button onclick="closeModal()" class="bg-[#1a3151] text-white text-xs font-semibold px-4 py-2 rounded hover:bg-[#101f33] cursor-pointer transition">Закрыть</button>
+            <div class="p-5 overflow-y-auto" id="modal-main-content"></div>
+            <div class="bg-slate-50 px-5 py-3 text-right border-t border-slate-100 shrink-0">
+                <button onclick="closeModal()" class="bg-[#1e1642] text-white text-xs font-semibold px-4 py-2 rounded hover:bg-[#120e25] cursor-pointer transition">Закрыть</button>
             </div>
         </div>
     </div>
 
-    <footer class="bg-[#101f33] text-slate-400 text-xs border-t-4 border-[#1a3151] mt-auto">
-        <div class="max-w-7xl mx-auto px-4 py-6 text-center text-slate-500">
-            &copy; 2026 Custom Telegram League Markt. Шаблон подготовлен для заполнения личной структурой команд.
+    <!-- ПОДВАЛ -->
+    <footer class="bg-[#120e25] text-slate-500 text-xs border-t-2 border-[#1e1642] mt-auto">
+        <div class="max-w-7xl mx-auto px-4 py-4 text-center">
+            &copy; 2026 FTCL 2 MARKET — База данных турнира. Все права защищены.
         </div>
     </footer>
 
+    <!-- СЦЕНАРИИ, ПОИСК, ФИЛЬТРЫ И ДАННЫЕ ЛИГИ FTCL 2 -->
     <script>
-        // ==========================================
-        // БАЗА ДАННЫХ ВАШЕЙ ЛИГИ (СЮДА БУДЕМ ДОБАВЛЯТЬ ВАШИ ДАННЫЕ)
-        // ==========================================
-        
-        const LEAGUE_CLUBS = [
-            { id: "diamonds", name: "FC Diamonds", owner: "@Manager_Leo", color: "from-cyan-500 to-blue-600", count: 3 },
-            { id: "kraken", name: "Kraken Esports", owner: "@Kraken_Boss", color: "from-teal-600 to-slate-800", count: 2 },
-            { id: "vanguard", name: "Vanguard FC", owner: "@Vanguard_Admin", color: "from-red-600 to-orange-500", count: 2 }
+        // ========================================================
+        // СТРУКТУРИРОВАННАЯ БАЗА КЛУБОВ
+        // ========================================================
+        const FTCL_CLUBS = [
+            { id: "zaga_rfc", name: "РФК Зага", owner: "@fanziks", sideColor: "bg-violet-600", coach: { name: "Франческо Зага", license: "A" } }
         ];
 
-        const LEAGUE_PLAYERS = [
-            { id: 1, nick: "@User_Alpha", clubId: "diamonds", clubName: "FC Diamonds", position: "Нападающий", price: "7.50 млн ₽", goals: 12, assists: 4, status: "В форме" },
-            { id: 2, nick: "@Shadow_Striker", clubId: "diamonds", clubName: "FC Diamonds", position: "Полузащитник", price: "5.20 млн ₽", goals: 3, assists: 9, status: "В аренде" },
-            { id: 3, nick: "@Cyber_Goalie", clubId: "kraken", clubName: "Kraken Esports", position: "Вратарь", price: "4.80 млн ₽", goals: 0, assists: 1, status: "Основной состав" },
-            { id: 4, nick: "@Tactician_X", clubId: "vanguard", clubName: "Vanguard FC", position: "Защитник", price: "4.00 млн ₽", goals: 1, assists: 3, status: "Капитан" },
-            { id: 5, nick: "@Phoenix_FC", clubId: "vanguard", clubName: "Vanguard FC", position: "Нападающий", price: "3.90 млн ₽", goals: 8, assists: 2, status: "Травмирован" },
-            { id: 6, nick: "@Glitch_Hunter", clubId: "kraken", clubName: "Kraken Esports", position: "Защитник", price: "2.10 млн ₽", goals: 0, assists: 0, status: "Замена" },
-            { id: 7, nick: "@Zeus_Mode", clubId: "diamonds", clubName: "FC Diamonds", position: "Защитник", price: "1.80 млн ₽", goals: 2, assists: 0, status: "Основной состав" }
+        // ИГРОКИ РФК ЗАГА
+        const FTCL_PLAYERS = [
+            { id: 1, nick: "Зага", clubId: "zaga_rfc", clubName: "РФК Зага", position: "Нападающий", price: "5.00 млн ₽", rawPrice: 5000000, rating: 50 },
+            { id: 2, nick: "Зенитчик", clubId: "zaga_rfc", clubName: "РФК Зага", position: "Защитник", price: "2.10 млн ₽", rawPrice: 2100000, rating: 55 },
+            { id: 3, nick: "Тест Сайта", clubId: "zaga_rfc", clubName: "РФК Заga", position: "Вратарь", price: "4.00 млн ₽", rawPrice: 4000000, rating: 50 },
+            { id: 4, nick: "Игрок Пять", clubId: "zaga_rfc", clubName: "РФК Зага", position: "Полузащитник", price: "1.50 млн ₽", rawPrice: 1500000, rating: 48 },
+            { id: 5, nick: "Игрок Шесть", clubId: "zaga_rfc", clubName: "РФК Зага", position: "Защитник", price: "3.20 млн ₽", rawPrice: 3200000, rating: 60 },
+            { id: 6, nick: "Игрок Семь", clubId: "zaga_rfc", clubName: "РФК Зага", position: "Нападающий", price: "6.00 млн ₽", rawPrice: 6000000, rating: 65 }
         ];
 
-        const LEAGUE_NEWS = [
-            { title: "Завершился аукцион 3-го сезона", desc: "Команды потратили суммарно более 25 млн виртуальных рублей на покупку свободных агентов чата.", time: "2 часа назад" },
-            { title: "Скандал в Kraken Esports", desc: "Игрок отказался менять свой юзернейм в профиле под тег команды. Клуб грозит крупным штрафом.", time: "Вчера, 21:00" }
+        // ДАННЫЕ ЛЕНТЫ НОВОСТЕЙ (Время задается в миллисекундах)
+        const NEWS_DATA = [
+            { 
+                title: "Подготовка к заполнению", 
+                text: "Все тестовые клубы удалены по запросу администрации. В системе сохранен эталонный клуб «РФК Зага».", 
+                timestamp: new Date().getTime() - (1000 * 60 * 12) // 12 минут назад
+            },
+            { 
+                title: "Обновление визуального стиля", 
+                text: "Лига FTCL 2 официально запущена в новом фиолетовом дизайне. Уважаемые менеджеры, готовьте списки заявок к публикации.", 
+                timestamp: new Date().getTime() - (1000 * 60 * 60 * 3) // 3 часа назад
+            },
+            { 
+                title: "Регистрация домена и запуск", 
+                text: "Утверждено новое зеркало сайта — @FTCL2 в мессенджере Telegram. Подписывайтесь, чтобы отслеживать трансферное окно в реальном времени.", 
+                timestamp: new Date().getTime() - (1000 * 60 * 60 * 30) // Больше суток назад (1 день назад)
+            }
         ];
 
-        const LEAGUE_TRANSFERS = [
-            { player: "@Shadow_Striker", from: "Vanguard FC", to: "FC Diamonds", fee: "3.50 млн ₽", status: "Выкуп контракта" },
-            { player: "@Cyber_Goalie", from: "Свободный агент", to: "Kraken Esports", fee: "Бесплатно", status: "Подписание" }
-        ];
+        let currentPriceSortOrder = 'desc'; 
+        let currentLetterFilter = 'ALL';
 
-        // ==========================================
-        // ЛОГИКА ПЕРЕКЛЮЧЕНИЯ ВКЛАДОК И ОТРИСОВКИ
-        // ==========================================
+        // ========================================================
+        // ФУНКЦИЯ ДИНАМИЧЕСКОГО СЧЕТЧИКА ВРЕМЕНИ ДЛЯ НОВОСТЕЙ
+        // ========================================================
+        function timeSince(date) {
+            const seconds = Math.floor((new Date() - date) / 1000);
+            if (seconds < 0) return "Только что";
+            
+            let interval = seconds / 31536000;
+            if (interval > 1) return Math.floor(interval) + " г. назад";
+            
+            interval = seconds / 2592000;
+            if (interval > 1) return Math.floor(interval) + " мес. назад";
+            
+            interval = seconds / 86400;
+            if (interval > 1) return Math.floor(interval) + " дн. назад";
+            
+            interval = seconds / 3600;
+            if (interval > 1) return Math.floor(interval) + " ч. назад";
+            
+            interval = seconds / 60;
+            if (interval > 1) return Math.floor(interval) + " мин. назад";
+            
+            return "Только что";
+        }
 
-        function switchTab(tabId) {
-            // Скрыть все вкладки
-            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
-            // Снять активный класс со всех кнопок навигации
+        function renderNews() {
+            const container = document.getElementById('news-container');
+            if (!container) return;
+            
+            container.innerHTML = NEWS_DATA.map(news => `
+                <div class="p-3 rounded bg-slate-50 border-l-4 border-[#7c3aed] shadow-xs">
+                    <h4 class="font-semibold text-slate-900 text-xs">${news.title}</h4>
+                    <p class="text-slate-600 text-[11px] mt-1 leading-relaxed">${news.text}</p>
+                    <span class="text-[9px] text-[#7c3aed] font-bold block mt-2 uppercase tracking-wider">
+                        ⏰ ${timeSince(news.timestamp)}
+                    </span>
+                </div>
+            `).join('');
+        }
+
+        // ========================================================
+        // ДВИЖОК ПОИСКА
+        // ========================================================
+        function handleSearch(query) {
+            const trimmedQuery = query.trim().toLowerCase();
+
+            if (trimmedQuery === "") {
+                clearSearchAndGoHome();
+                return;
+            }
+
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.add('hidden'));
             document.querySelectorAll('.nav-btn').forEach(btn => {
-                btn.classList.remove('text-[#d4f01e]', 'border-b-2', 'border-[#d4f01e]', 'bg-[#1a3151]');
+                btn.classList.remove('text-[#a78bfa]', 'border-b-2', 'border-[#a78bfa]', 'bg-[#1e1642]');
+                btn.classList.add('text-slate-300');
+            });
+            
+            document.getElementById('tab-search').classList.remove('hidden');
+            document.getElementById('nav-search').classList.remove('hidden');
+            document.getElementById('nav-search').classList.add('text-[#a78bfa]');
+
+            const filteredPlayers = FTCL_PLAYERS.filter(p => p.nick.toLowerCase().includes(trimmedQuery));
+            const filteredCoaches = [];
+            
+            FTCL_CLUBS.forEach(club => {
+                if (club.coach.name.toLowerCase().includes(trimmedQuery) || club.name.toLowerCase().includes(trimmedQuery)) {
+                    filteredCoaches.push(club);
+                }
+            });
+
+            const totalMatches = filteredPlayers.length + filteredCoaches.length;
+            document.getElementById('search-matches-count').innerText = totalMatches;
+
+            const resultsContainer = document.getElementById('search-results-container');
+            
+            if (totalMatches === 0) {
+                resultsContainer.innerHTML = `
+                    <div class="p-6 text-center text-slate-400 text-xs bg-slate-50 rounded border border-slate-100">
+                        По вашему запросу ничего не найдено.
+                    </div>
+                `;
+                return;
+            }
+
+            let htmlOutput = "";
+
+            filteredCoaches.forEach(club => {
+                htmlOutput += `
+                    <div onclick="openClubModal('${club.id}')" class="bg-slate-50 border border-slate-200 p-3 rounded flex items-center justify-between hover:border-slate-400 cursor-pointer transition">
+                        <div class="flex items-center gap-3">
+                            <div class="w-2 h-8 ${club.sideColor} rounded-sm"></div>
+                            <div>
+                                <span class="font-bold text-slate-900 text-xs">${club.name}</span>
+                                <span class="text-[11px] text-slate-400 block">Тренер: ${club.coach.name}</span>
+                            </div>
+                        </div>
+                        <span class="bg-slate-200 text-slate-700 text-[10px] font-bold px-2 py-1 rounded">Команда / Тренер</span>
+                    </div>
+                `;
+            });
+
+            filteredPlayers.forEach(p => {
+                htmlOutput += `
+                    <div onclick="openPlayerModal(${p.id})" class="bg-white p-3 rounded border border-slate-200 flex items-center justify-between hover:border-slate-400 cursor-pointer transition">
+                        <div>
+                            <span class="font-bold text-violet-900 text-xs block">${p.nick}</span>
+                            <span class="text-[11px] text-slate-400">${p.position} • ${p.clubName}</span>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <span class="text-[11px] font-bold text-slate-700 bg-slate-100 px-2 py-0.5 rounded">${p.price}</span>
+                            <span class="w-7 h-7 flex items-center justify-center rounded text-[11px] ${getRatingBadgeClass(p.rating)}">${p.rating}</span>
+                        </div>
+                    </div>
+                `;
+            });
+
+            resultsContainer.innerHTML = htmlOutput;
+        }
+
+        function clearSearchAndGoHome() {
+            document.getElementById('playerSearch').value = "";
+            document.getElementById('nav-search').classList.add('hidden');
+            switchTab('news');
+        }
+
+        // ========================================================
+        // СОРТИРОВКА И ПЕРЕКЛЮЧЕНИЕ ВКЛАДОК
+        // ========================================================
+        function togglePriceSort() {
+            currentPriceSortOrder = (currentPriceSortOrder === 'desc') ? 'asc' : 'desc';
+            document.getElementById('sortDirectionArrow').innerText = (currentPriceSortOrder === 'desc') ? "Убывание ⬇️" : "Возрастание ⬆️";
+            renderValuesPage();
+        }
+
+        // Исправлена проблема: теперь при переключении на вкладку «Лента новостей» таймеры обновляются
+        function switchTab(tabId) {
+            if (tabId !== 'search') document.getElementById('nav-search').classList.add('hidden');
+
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.add('hidden'));
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('text-[#a78bfa]', 'border-b-2', 'border-[#a78bfa]', 'bg-[#1e1642]');
                 btn.classList.add('text-slate-300');
             });
 
-            // Показать выбранную вкладку
-            document.getElementById(`tab-${tabId}`).classList.add('active');
-            // Подсветить выбранную кнопку меню
+            document.getElementById(`tab-${tabId}`).classList.remove('hidden');
             const activeBtn = document.getElementById(`nav-${tabId}`);
-            activeBtn.classList.remove('text-slate-300');
-            activeBtn.classList.add('text-[#d4f01e]', 'border-b-2', 'border-[#d4f01e]', 'bg-[#1a3151]');
+            if (activeBtn) {
+                activeBtn.classList.remove('text-slate-300');
+                activeBtn.classList.add('text-[#a78bfa]', 'border-b-2', 'border-[#a78bfa]', 'bg-[#1e1642]');
+            }
+
+            if (tabId === 'news') {
+                renderNews();
+            }
         }
 
-        // Рендеринг новостей
-        function renderNews() {
-            const container = document.getElementById('news-container');
-            container.innerHTML = LEAGUE_NEWS.map(n => `
-                <div class="p-3 rounded bg-slate-50 border border-slate-100 hover:bg-slate-100/50 transition">
-                    <h4 class="font-semibold text-slate-900 text-sm">${n.title}</h4>
-                    <p class="text-slate-600 text-xs mt-1">${n.desc}</p>
-                    <span class="text-[10px] text-slate-400 block mt-2">${n.time}</span>
-                </div>
-            `).join('');
+        function getRatingBadgeClass(rating) {
+            if (rating >= 65) return 'bg-[#7c3aed] text-white font-black'; 
+            if (rating >= 55) return 'bg-slate-700 text-white font-bold';       
+            return 'bg-slate-200 text-slate-800 font-medium';                     
         }
 
-        // Рендеринг клубов
-        function renderClubs() {
-            const container = document.getElementById('clubs-container');
-            container.innerHTML = LEAGUE_CLUBS.map(club => `
-                <div class="bg-gradient-to-br ${club.color} text-white p-4 rounded-lg shadow-xs relative overflow-hidden group">
-                    <div class="relative z-10">
-                        <span class="text-[10px] bg-black/30 font-bold px-2 py-0.5 rounded uppercase tracking-wider">Клуб лиги</span>
-                        <h4 class="text-lg font-bold mt-1">${club.name}</h4>
-                        <div class="text-xs text-white/80 mt-2">Владелец: <span class="font-mono font-bold">${club.owner}</span></div>
-                        <div class="text-xs text-white/80">Состав: ${club.count} игроков</div>
+        // ========================================================
+        // ФИЛЬТРАЦИЯ И ОТРИСОВКА СПИСКА КЛУБОВ
+        // ========================================================
+        function filterClubsByLetter(range) {
+            currentLetterFilter = range;
+            
+            document.querySelectorAll('.club-filter-btn').forEach(btn => {
+                btn.classList.remove('bg-[#7c3aed]', 'text-white');
+                btn.classList.add('bg-white', 'text-slate-600');
+            });
+            
+            const activeBtn = event.currentTarget;
+            if(activeBtn) {
+                activeBtn.classList.remove('bg-white', 'text-slate-600');
+                activeBtn.classList.add('bg-[#7c3aed]', 'text-white');
+            }
+
+            renderClubsList();
+        }
+
+        function checkClubNameRange(name, range) {
+            if (range === 'ALL') return true;
+            const firstChar = name.trim().toUpperCase()[0];
+            
+            if (range === 'А-Д') return 'АБВГД'.includes(firstChar);
+            if (range === 'Е-К') return 'ЕЁЖЗИЙК'.includes(firstChar);
+            if (range === 'Л-Р') return 'ЛМНОПР'.includes(firstChar);
+            if (range === 'С-Я') return 'СТУФХЦЧШЩЭЮЯ'.includes(firstChar);
+            if (range === 'ENG') return 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.includes(firstChar);
+            return true;
+        }
+
+        function renderClubsList() {
+            const container = document.getElementById('clubs-list-container');
+            const filteredClubs = FTCL_CLUBS.filter(club => checkClubNameRange(club.name, currentLetterFilter));
+            
+            if (filteredClubs.length === 0) {
+                container.innerHTML = `
+                    <div class="col-span-full text-center py-6 text-slate-400 text-xs bg-slate-50 rounded border border-dashed border-slate-200">
+                        Команд не найдено.
                     </div>
-                    <div class="absolute right-2 bottom-2 opacity-10 group-hover:opacity-20 transition-all">
-                        <img src="https://unpkg.com/lucide-static@latest/icons/shield.svg" class="w-20 h-20 invert" alt="Shield">
+                `;
+                return;
+            }
+
+            container.innerHTML = filteredClubs.map(club => {
+                const clubPlayers = FTCL_PLAYERS.filter(p => p.clubId === club.id);
+                return `
+                    <div onclick="openClubModal('${club.id}')" class="bg-white border border-slate-200 hover:border-slate-400 rounded p-3 flex items-center justify-between cursor-pointer transition shadow-xs group">
+                        <div class="flex items-center space-x-3 truncate">
+                            <div class="w-1.5 h-9 ${club.sideColor} rounded-sm shrink-0"></div>
+                            <div class="truncate">
+                                <h4 class="font-bold text-xs text-slate-900 group-hover:text-[#7c3aed] transition truncate">${club.name}</h4>
+                                <span class="text-[10px] text-slate-400 block truncate">Менеджер: ${club.owner}</span>
+                            </div>
+                        </div>
+                        <div class="text-right shrink-0 pl-2">
+                            <span class="text-[11px] font-bold text-slate-700 bg-slate-100 px-2 py-0.5 rounded">
+                                ${clubPlayers.length} игр.
+                            </span>
+                        </div>
                     </div>
-                </div>
-            `).join('');
+                `;
+            }).join('');
         }
 
-        // Рендеринг таблицы ценностей игроков
-        function renderValues() {
+        // ========================================================
+        // ДИНАМИЧЕСКИЕ СТРАНИЦЫ И СТАТИСТИКА
+        // ========================================================
+        function renderValuesPage() {
             const tbody = document.getElementById('values-table-body');
-            tbody.innerHTML = LEAGUE_PLAYERS.map((p, idx) => `
-                <tr class="hover:bg-slate-50 transition border-b border-slate-100">
-                    <td class="py-3 px-4 text-center text-slate-400 font-bold">${idx + 1}</td>
-                    <td class="py-3 px-2">
-                        <button onclick="openPlayerModal(${p.id})" class="text-left font-bold text-blue-900 hover:underline hover:text-blue-700 cursor-pointer focus:outline-none">
-                            ${p.nick}
-                        </button>
-                    </td>
-                    <td class="py-3 px-2 text-slate-600">${p.clubName}</td>
-                    <td class="py-3 px-2 text-center text-xs"><span class="bg-slate-100 text-slate-700 px-2 py-0.5 rounded-full">${p.position}</span></td>
-                    <td class="py-3 px-4 text-right">
-                        <span class="bg-[#eef3f7] border border-slate-300 text-slate-800 font-bold px-2 py-1 rounded-sm text-xs">
-                            ${p.price}
+            const playersCopy = [...FTCL_PLAYERS];
+            
+            playersCopy.sort((a, b) => (currentPriceSortOrder === 'desc') ? b.rawPrice - a.rawPrice : a.rawPrice - b.rawPrice);
+
+            tbody.innerHTML = playersCopy.map((p, idx) => `
+                <tr onclick="openPlayerModal(${p.id})" class="hover:bg-slate-50 transition border-b border-slate-100 cursor-pointer">
+                    <td class="py-2.5 px-4 text-center text-slate-400 font-bold">${idx + 1}</td>
+                    <td class="py-2.5 px-2"><span class="font-bold text-violet-950">${p.nick}</span></td>
+                    <td class="py-2.5 px-2 text-slate-500">${p.clubName}</td>
+                    <td class="py-2.5 px-2 text-center text-[11px] text-slate-600">${p.position}</td>
+                    <td class="py-2.5 px-2 text-center">
+                        <span class="inline-block w-7 py-0.5 rounded text-[10px] ${getRatingBadgeClass(p.rating)}">
+                            ${p.rating}
                         </span>
                     </td>
+                    <td class="py-2.5 px-4 text-right font-bold text-slate-900">${p.price}</td>
                 </tr>
             `).join('');
         }
 
-        // Рендеринг трансферов
-        function renderTransfers() {
-            const container = document.getElementById('transfers-container');
-            container.innerHTML = LEAGUE_TRANSFERS.map(t => `
-                <div class="p-3 hover:bg-slate-50 transition flex items-center justify-between gap-2">
+        function openClubModal(clubId) {
+            const club = FTCL_CLUBS.find(c => c.id === clubId);
+            if (!club) return;
+            const clubPlayers = FTCL_PLAYERS.filter(p => p.clubId === club.id);
+            
+            document.getElementById('modal-header-bg').className = `bg-[#1e1642] border-b-2 ${club.sideColor.replace('bg-', 'border-')} p-4 text-white flex justify-between items-center shrink-0`;
+            document.getElementById('modal-title-context').innerText = `Профиль команды — ${club.name}`;
+
+            document.getElementById('modal-main-content').innerHTML = `
+                <div class="mb-4 bg-slate-50 p-3 rounded border border-slate-200 flex justify-between text-xs">
                     <div>
-                        <span class="font-bold text-slate-800 block">${t.player}</span>
-                        <span class="text-xs text-slate-400">${t.from} ➔ ${t.to}</span>
+                        <span class="text-slate-400 block uppercase font-bold text-[10px]">Владелец / Представитель</span>
+                        <span class="font-mono font-bold text-slate-800 text-xs">${club.owner}</span>
                     </div>
                     <div class="text-right">
-                        <span class="text-emerald-600 font-bold text-xs block">+ ${t.fee}</span>
-                        <span class="text-[10px] bg-emerald-50 text-emerald-700 border border-emerald-200 font-medium px-1 rounded block mt-0.5">${t.status}</span>
+                        <span class="text-slate-400 block uppercase font-bold text-[10px]">Состав заявки</span>
+                        <span class="font-bold text-slate-800 text-xs">${clubPlayers.length} игроков</span>
                     </div>
                 </div>
-            `).join('');
+                
+                <h5 class="font-bold text-[11px] uppercase text-slate-400 tracking-wider mb-2">Управление штабом</h5>
+                <div class="bg-slate-50 border border-slate-200 p-3 rounded flex items-center justify-between mb-4 text-xs">
+                    <div>
+                        <span class="text-[9px] uppercase font-bold text-slate-400 block">Главный Тренер</span>
+                        <span class="font-bold text-slate-900 mt-0.5 block">${club.coach.name}</span>
+                    </div>
+                    <span class="bg-[#1e1642] text-white px-2.5 py-1 rounded text-[10px] font-bold">
+                        Лицензия ${club.coach.license}
+                    </span>
+                </div>
+                
+                <h5 class="font-bold text-[11px] uppercase text-slate-400 tracking-wider mb-2">Заявленные футболисты</h5>
+                <div class="space-y-1 max-h-60 overflow-y-auto pr-1">
+                    ${clubPlayers.length === 0 ? `
+                        <div class="text-center py-4 text-slate-400 text-xs">В данный момент заявочный лист пуст.</div>
+                    ` : clubPlayers.map(p => `
+                        <div onclick="event.stopPropagation(); openPlayerModal(${p.id})" class="bg-white p-2.5 rounded border border-slate-200 flex items-center justify-between hover:border-slate-400 cursor-pointer transition text-xs">
+                            <div>
+                                <span class="font-bold text-violet-950">${p.nick}</span>
+                                <span class="text-[11px] text-slate-400 block">${p.position}</span>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <span class="font-bold text-slate-700">${p.price}</span>
+                                <span class="w-6 h-6 flex items-center justify-center rounded text-[10px] ${getRatingBadgeClass(p.rating)}">${p.rating}</span>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+            document.getElementById('ftclModal').classList.remove('hidden');
         }
-
-        // Обновление цифр быстрой статистики
-        function updateStats() {
-            document.getElementById('stat-clubs-count').innerText = LEAGUE_CLUBS.length;
-            document.getElementById('stat-players-count').innerText = LEAGUE_PLAYERS.length;
-        }
-
-        // ==========================================
-        // ИНТЕРАКТИВНЫЕ МОДАЛЬНЫЕ ОКНА ДЛЯ ИГРОКОВ
-        // ==========================================
 
         function openPlayerModal(playerId) {
-            const player = LEAGUE_PLAYERS.find(p => p.id === playerId);
+            const player = FTCL_PLAYERS.find(p => p.id === playerId);
             if (!player) return;
+            
+            document.getElementById('modal-header-bg').className = 'bg-[#1e1642] p-4 text-white flex justify-between items-center shrink-0';
+            document.getElementById('modal-title-context').innerText = `Личное досье игрока`;
 
-            const modalContent = document.getElementById('modal-content');
-            modalContent.innerHTML = `
-                <div class="text-center pb-3 border-b border-slate-100">
-                    <div class="text-2xl font-bold text-slate-900 font-mono">${player.nick}</div>
-                    <div class="text-sm text-slate-400 mt-0.5">${player.position} • ${player.clubName}</div>
+            document.getElementById('modal-main-content').innerHTML = `
+                <div class="text-center pb-4 border-b border-slate-100">
+                    <div class="text-2xl font-black text-slate-900 tracking-tight">${player.nick}</div>
+                    <div class="text-xs text-slate-400 mt-1">${player.position} • <span class="text-violet-600 font-bold">${player.clubName}</span></div>
                 </div>
-                <div class="grid grid-cols-2 gap-4 py-2">
-                    <div class="bg-slate-50 p-3 rounded">
-                        <span class="text-[10px] text-slate-400 block uppercase font-bold">Оценочная цена</span>
-                        <span class="text-base font-bold text-emerald-600">${player.price}</span>
+                <div class="grid grid-cols-2 gap-4 pt-4 text-center">
+                    <div class="bg-slate-50 p-3 rounded border border-slate-100">
+                        <span class="text-[10px] text-slate-400 block uppercase font-bold">Оценка стоимости</span>
+                        <span class="text-base font-bold text-emerald-600 block mt-0.5">${player.price}</span>
                     </div>
-                    <div class="bg-slate-50 p-3 rounded">
-                        <span class="text-[10px] text-slate-400 block uppercase font-bold">Статус в Лиге</span>
-                        <span class="text-xs font-semibold text-slate-700 block mt-1">${player.status}</span>
-                    </div>
-                </div>
-                <div class="bg-slate-50 p-3 rounded space-y-2">
-                    <span class="text-[10px] text-slate-400 block uppercase font-bold">Личная статистика сезона</span>
-                    <div class="flex justify-between text-xs font-medium text-slate-700">
-                        <span>Забитые голы (или очки):</span>
-                        <span class="font-bold text-slate-900">${player.goals}</span>
-                    </div>
-                    <div class="flex justify-between text-xs font-medium text-slate-700">
-                        <span>Голевые передачи / Важные действия:</span>
-                        <span class="font-bold text-slate-900">${player.assists}</span>
+                    <div class="bg-slate-50 p-3 rounded border border-slate-100 flex flex-col items-center justify-center">
+                        <span class="text-[10px] text-slate-400 block uppercase font-bold mb-1">Рейтинг силы</span>
+                        <span class="w-8 h-8 flex items-center justify-center rounded text-xs ${getRatingBadgeClass(player.rating)}">${player.rating}</span>
                     </div>
                 </div>
             `;
-
-            document.getElementById('playerModal').classList.remove('hidden');
+            document.getElementById('ftclModal').classList.remove('hidden');
         }
 
         function closeModal() {
-            document.getElementById('playerModal').classList.add('hidden');
+            document.getElementById('ftclModal').classList.add('hidden');
         }
 
-        // Инициализация данных при загрузке страницы
+        function updateSidebarStats() {
+            document.getElementById('stat-clubs').innerText = FTCL_CLUBS.length;
+            document.getElementById('stat-players').innerText = FTCL_PLAYERS.length;
+            document.getElementById('clubs-count-badge').innerText = `Всего: ${FTCL_CLUBS.length}`;
+            
+            if (FTCL_PLAYERS.length > 0) {
+                const maxRating = Math.max(...FTCL_PLAYERS.map(p => p.rating));
+                const topPlayer = FTCL_PLAYERS.find(p => p.rating === maxRating);
+                document.getElementById('stat-max-rating').innerText = topPlayer ? `${maxRating} (${topPlayer.nick})` : "0";
+            } else {
+                document.getElementById('stat-max-rating').innerText = "0";
+            }
+        }
+
+        // Инициализация при старте
         window.onload = function() {
             renderNews();
-            renderClubs();
-            renderValues();
-            renderTransfers();
-            updateStats();
+            renderClubsList();
+            renderValuesPage();
+            updateSidebarStats();
         };
     </script>
 </body>
-  </html>
+</html>
