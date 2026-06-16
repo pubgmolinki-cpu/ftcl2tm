@@ -212,7 +212,7 @@
                 </h4>
                 <div class="text-[11px] space-y-1.5 text-slate-400">
                     <div><span class="font-bold text-white font-mono">Лицензия A</span> — Высший статус управления</div>
-                    <div><span class="font-bold text-white font-mono">Licence B</span> — Продвинутый уровень</div>
+                    <div><span class="font-bold text-white font-mono">Лицензия B</span> — Продвинутый уровень</div>
                     <div><span class="font-bold text-white font-mono">Лицензия C</span> — Базовый уровень</div>
                 </div>
             </div>
@@ -259,52 +259,27 @@
             { id: 6, nick: "Игрок Семь", clubId: "zaga_rfc", clubName: "РФК Зага", position: "Нападающий", price: "6.00 млн ₽", rawPrice: 6000000, rating: 65 }
         ];
 
-        // ДАННЫЕ ЛЕНТЫ НОВОСТЕЙ
+        // ДАННЫЕ ЛЕНТЫ НОВОСТЕЙ С ФИКСИРОВАННЫМ ВРЕМЕНЕМ ПУБЛИКАЦИИ
         const NEWS_DATA = [
             { 
                 title: "Подготовка к заполнению", 
                 text: "Все тестовые клубы удалены по запросу администрации. В системе сохранен эталонный клуб «РФК Зага».", 
-                timestamp: new Date().getTime() - (1000 * 60 * 12) 
+                dateText: "Сегодня, 15:45" 
             },
             { 
                 title: "Обновление визуального стиля", 
                 text: "Лига FTCL 2 официально запущена в новом фиолетовом дизайне. Уважаемые менеджеры, готовьте списки заявок к публикации.", 
-                timestamp: new Date().getTime() - (1000 * 60 * 60 * 3) 
+                dateText: "Сегодня, 13:10" 
             },
             { 
                 title: "Регистрация домена и запуск", 
                 text: "Утверждено новое зеркало сайта — @FTCL2 в мессенджере Telegram. Подписывайтесь, чтобы отслеживать трансферное окно в реальном времени.", 
-                timestamp: new Date().getTime() - (1000 * 60 * 60 * 30) 
+                dateText: "Вчера, 10:00" 
             }
         ];
 
         let currentPriceSortOrder = 'desc'; 
         let currentLetterFilter = 'ALL';
-
-        // ========================================================
-        // ФУНКЦИЯ ДИНАМИЧЕСКОГО СЧЕТЧИКА ВРЕМЕНИ ДЛЯ НОВОСТЕЙ
-        // ========================================================
-        function timeSince(date) {
-            const seconds = Math.floor((new Date() - date) / 1000);
-            if (seconds < 0) return "Только что";
-            
-            let interval = seconds / 31536000;
-            if (interval > 1) return Math.floor(interval) + " г. назад";
-            
-            interval = seconds / 2592000;
-            if (interval > 1) return Math.floor(interval) + " мес. назад";
-            
-            interval = seconds / 86400;
-            if (interval > 1) return Math.floor(interval) + " дн. назад";
-            
-            interval = seconds / 3600;
-            if (interval > 1) return Math.floor(interval) + " ч. назад";
-            
-            interval = seconds / 60;
-            if (interval > 1) return Math.floor(interval) + " мин. назад";
-            
-            return "Только что";
-        }
 
         function renderNews() {
             const container = document.getElementById('news-container');
@@ -315,7 +290,7 @@
                     <h4 class="font-semibold text-slate-900 text-xs">${news.title}</h4>
                     <p class="text-slate-600 text-[11px] mt-1 leading-relaxed">${news.text}</p>
                     <span class="text-[9px] text-[#7c3aed] font-bold block mt-2 uppercase tracking-wider">
-                        ⏰ ${timeSince(news.timestamp)}
+                        📅 ${news.dateText}
                     </span>
                 </div>
             `).join('');
@@ -370,7 +345,7 @@
 
             let htmlOutput = "";
 
-            // 1. БЛОК ТРЕНЕРОВ (ЕСЛИ НАЙДЕНЫ)
+            // 1. КАРТОЧКИ ТРЕНЕРОВ
             if (filteredCoaches.length > 0) {
                 htmlOutput += `<div>
                     <h4 class="text-[10px] uppercase font-bold text-slate-400 tracking-wider mb-2">Найдено тренеров</h4>
@@ -398,7 +373,7 @@
                 htmlOutput += `</div></div>`;
             }
 
-            // 2. БЛОК КЛУБОВ (ЕСЛИ НАЙДЕНЫ)
+            // 2. БЛОК КЛУБОВ
             if (filteredClubs.length > 0) {
                 htmlOutput += `<div class="mt-2">
                     <h4 class="text-[10px] uppercase font-bold text-slate-400 tracking-wider mb-2">Найдено клубов</h4>
@@ -420,7 +395,7 @@
                 htmlOutput += `</div></div>`;
             }
 
-            // 3. БЛОК ИГРОКОВ (ЕСЛИ НАЙДЕНЫ)
+            // 3. БЛОК ИГРОКОВ
             if (filteredPlayers.length > 0) {
                 htmlOutput += `<div class="mt-2">
                     <h4 class="text-[10px] uppercase font-bold text-slate-400 tracking-wider mb-2">Найдено игроков</h4>
